@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<file:config name="File_Read" doc:name="File Config" doc:id="3fbf8c59-3816-49b1-8a33-9a80797aadf9" >
+		<file:connection workingDir="C:\Users\cpinh\Documents" />
+	</file:config>
+	<flow name="excel-export-testFlow" doc:id="c8a97e80-51b1-4d45-b27f-ab97be039568" >
+		<scheduler doc:name="Scheduler" doc:id="34721b4e-a83e-478e-86f6-6f399a8fcfcd" >
+			<scheduling-strategy >
+				<fixed-frequency timeUnit="HOURS"/>
+			</scheduling-strategy>
+		</scheduler>
+		<file:read doc:name="Read" doc:id="82ce2b9f-641c-42ca-827d-98747b7ef4ae" config-ref="File_Read" path="C:\Users\cpinh\Documents\test-deleteme.xls" outputMimeType="application/xlsx"/>
+		<set-variable value="#[payload]" doc:name="contents" doc:id="5ccdbb94-026d-41da-b4e3-5b6e1db69ec9" variableName="contents"/>
+		<logger level="INFO" doc:name="Logger" doc:id="14f2ba6f-96b0-4f33-9ebd-46adfb7cd012" message="#[output application/json --- payload]"/>
+		<file:write doc:name="Write JSON" doc:id="b8dfd7df-29bf-46b5-ad24-201dda799d3a" config-ref="File_Read" path="test-deleteme.json">
+			<file:content><![CDATA[#[output application/json --- vars.contents]]]></file:content>
+		</file:write>
+		<file:write doc:name="Write XML" doc:id="5007032f-4357-4adb-a779-9b6380773302" config-ref="File_Read" path="test-deleteme.xml">
+			<file:content ><![CDATA[#[output application/xml --- root: (vars.contents default' ')]]]></file:content>
+		</file:write>
+	</flow>
+</mule>
